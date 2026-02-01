@@ -60,6 +60,21 @@
 | [zhixuan](brands/zhixuan.md) | 华为智选 | U-MAGIC 优畅享/电信麦芒/NZONE/Hi nova/雷鸟 FFALCON/TD Tech/WIKO | ⏹ | ❌ | -- |
 | [zte_cn](brands/zte_cn.md) | 中兴 (ZTE) | 2017 年起上市的机型 | ❌ | ❌ | -- |
 
+## 可视化预览
+
+仓库根目录已提供发布规律可视化页面：
+
+- `index.html`：推荐入口（依赖 `styles.css` 与 `app.js`）。
+- `release-patterns.html`：单文件版本，便于快速查看。
+
+本地预览方式：
+
+1. 在仓库根目录启动静态服务器：
+   ```bash
+   python -m http.server 8000
+   ```
+2. 浏览器访问：`http://127.0.0.1:8000/index.html`。
+
 ## 更新日志
 
 参见 [CHANGELOG.md](CHANGELOG.md)
