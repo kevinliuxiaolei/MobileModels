@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>手机品牌发布规律可视化</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f7f7fb;
+      --card: #ffffff;
+      --text: #1e1f24;
+      --muted: #5a5f6b;
+      --accent: #4c6fff;
+      --accent-soft: rgba(76, 111, 255, 0.18);
+      --grid: #e7e9f1;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Inter", "Segoe UI", "PingFang SC", "Noto Sans SC", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    header {
+      padding: 48px 20px 28px;
+      text-align: center;
+      background: linear-gradient(160deg, #edf0ff, #f7f7fb 70%);
+      border-bottom: 1px solid var(--grid);
+    }
+
+    header h1 {
+      margin: 0 0 12px;
+      font-size: clamp(24px, 4vw, 36px);
+    }
+
+    header p {
+      margin: 0 auto;
+      max-width: 760px;
+      color: var(--muted);
+    }
+
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 20px 60px;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .search {
+      flex: 1;
+      min-width: 220px;
+    }
+
+    .search input {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--grid);
+      font-size: 14px;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+
+    .grid {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 18px 20px;
+      box-shadow: 0 6px 18px rgba(20, 20, 50, 0.06);
+      border: 1px solid var(--grid);
+    }
+
+    .card-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .brand {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .tag {
+      font-size: 12px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    .meta {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    .months {
+      display: grid;
+      grid-template-columns: repeat(12, minmax(20px, 1fr));
+      gap: 6px;
+    }
+
+    .month {
+      position: relative;
+      border: 1px solid var(--grid);
+      border-radius: 10px;
+      padding: 10px 4px;
+      font-size: 12px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .month.active {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    .note {
+      margin-top: 10px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .footer {
+      margin-top: 40px;
+      font-size: 12px;
+      color: var(--muted);
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>手机品牌发布规律可视化</h1>
+    <p>
+      汇总主流手机品牌的旗舰发布节奏，突出常见集中月份与补充发布窗口。该页面为概览性整理，便于快速了解一年中的发布密集期与品牌习惯。
+    </p>
+  </header>
+
+  <main>
+    <section class="controls">
+      <div class="search">
+        <input id="searchInput" type="search" placeholder="搜索品牌或系列关键词" />
+      </div>
+      <div class="legend">
+        <span><span class="dot"></span> 集中发布月</span>
+        <span>其余月份为低频或补充发布</span>
+      </div>
+    </section>
+
+    <section class="grid" id="brandGrid"></section>
+
+    <p class="footer">提示：以上为规律性总结，并非每次发布的严格时间表。</p>
+  </main>
+
+  <script>
+    const monthLabels = ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"];
+
+    const releasePatterns = [
+      {
+        brand: "Apple",
+        cycle: "年度秋季发布",
+        focus: "iPhone / Apple Watch",
+        months: [9, 10],
+        notes: "秋季主发布会集中，春季偶有补充。",
+      },
+      {
+        brand: "Samsung",
+        cycle: "年度双旗舰",
+        focus: "Galaxy S / Fold / Flip",
+        months: [1, 2, 7, 8],
+        notes: "上半年 S 系列，下半年折叠屏集中。",
+      },
+      {
+        brand: "Huawei",
+        cycle: "上下半年双节奏",
+        focus: "Mate / Pura / nova",
+        months: [3, 4, 9, 10],
+        notes: "春季影像旗舰与秋季旗舰并行。",
+      },
+      {
+        brand: "Xiaomi",
+        cycle: "多阶段发布",
+        focus: "Xiaomi 数字 / Redmi / MIX",
+        months: [3, 4, 8, 9, 10],
+        notes: "上半年数字旗舰，下半年 MIX/影像旗舰+Redmi。",
+      },
+      {
+        brand: "OPPO",
+        cycle: "季度节奏",
+        focus: "Find / Reno",
+        months: [3, 4, 10, 11],
+        notes: "Find 春季发布，Reno 秋季更新更明显。",
+      },
+      {
+        brand: "vivo",
+        cycle: "双旗舰 + 影像节奏",
+        focus: "X / S",
+        months: [1, 4, 9, 11],
+        notes: "X 系列多在年初与秋季，S 系列春季补充。",
+      },
+      {
+        brand: "HONOR",
+        cycle: "旗舰+中端并行",
+        focus: "Magic / 数字系列",
+        months: [1, 2, 7, 10, 11],
+        notes: "Magic 年初，数字系列年中至秋季。",
+      },
+      {
+        brand: "realme",
+        cycle: "快速迭代",
+        focus: "GT / 数字系列",
+        months: [3, 6, 9, 11],
+        notes: "GT 与数字系列分散发布，季度均衡。",
+      },
+      {
+        brand: "OnePlus",
+        cycle: "半年节奏",
+        focus: "旗舰 / Nord",
+        months: [1, 2, 7, 8],
+        notes: "上半年旗舰，下半年更新或强化机型。",
+      },
+      {
+        brand: "Google",
+        cycle: "年度秋季发布",
+        focus: "Pixel",
+        months: [8, 9, 10],
+        notes: "秋季 Pixel 发布会集中。",
+      },
+      {
+        brand: "Sony",
+        cycle: "分阶段旗舰",
+        focus: "Xperia 旗舰",
+        months: [2, 5, 9],
+        notes: "MWC 前后及秋季补充发布。",
+      },
+      {
+        brand: "Motorola",
+        cycle: "多区域多批次",
+        focus: "razr / edge",
+        months: [3, 6, 9],
+        notes: "春夏秋分批发布新机型。",
+      },
+      {
+        brand: "Nothing",
+        cycle: "年度旗舰 + 衍生款",
+        focus: "Phone / CMF",
+        months: [3, 7],
+        notes: "上半年发布 Phone 或衍生系列。",
+      },
+    ];
+
+    const grid = document.getElementById("brandGrid");
+    const searchInput = document.getElementById("searchInput");
+
+    const render = (keyword = "") => {
+      grid.innerHTML = "";
+      const normalized = keyword.trim().toLowerCase();
+      const filtered = releasePatterns.filter((item) => {
+        if (!normalized) return true;
+        return (
+          item.brand.toLowerCase().includes(normalized) ||
+          item.cycle.toLowerCase().includes(normalized) ||
+          item.focus.toLowerCase().includes(normalized) ||
+          item.notes.toLowerCase().includes(normalized)
+        );
+      });
+
+      filtered.forEach((item) => {
+        const card = document.createElement("article");
+        card.className = "card";
+
+        const header = document.createElement("div");
+        header.className = "card-header";
+        header.innerHTML = `
+          <div class="brand">${item.brand}</div>
+          <span class="tag">${item.cycle}</span>
+        `;
+
+        const meta = document.createElement("div");
+        meta.className = "meta";
+        meta.textContent = `重点系列：${item.focus}`;
+
+        const months = document.createElement("div");
+        months.className = "months";
+
+        monthLabels.forEach((label, index) => {
+          const month = document.createElement("div");
+          const monthNumber = index + 1;
+          month.className = "month";
+          month.textContent = label;
+          if (item.months.includes(monthNumber)) {
+            month.classList.add("active");
+          }
+          months.appendChild(month);
+        });
+
+        const note = document.createElement("div");
+        note.className = "note";
+        note.textContent = item.notes;
+
+        card.appendChild(header);
+        card.appendChild(meta);
+        card.appendChild(months);
+        card.appendChild(note);
+        grid.appendChild(card);
+      });
+    };
+
+    searchInput.addEventListener("input", (event) => {
+      render(event.target.value);
+    });
+
+    render();
+  </script>
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>手机品牌发布规律可视化</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="hero">
+      <div class="hero-content">
+        <p class="hero-eyebrow">MobileModels · Release Insights</p>
+        <h1>手机品牌发布规律可视化</h1>
+        <p class="hero-subtitle">
+          汇总主流品牌在一年中的集中发布月份与补充窗口，帮助快速理解旗舰机型的发布节奏。
+        </p>
+        <div class="hero-tags">
+          <span>年度节奏</span>
+          <span>旗舰 & 影像</span>
+          <span>折叠屏/新形态</span>
+        </div>
+      </div>
+      <div class="hero-summary">
+        <div class="summary-card">
+          <p>覆盖品牌</p>
+          <h2 id="brandCount">12</h2>
+        </div>
+        <div class="summary-card">
+          <p>集中月份</p>
+          <h2>1-4 / 9-11</h2>
+        </div>
+        <div class="summary-card">
+          <p>年度节奏</p>
+          <h2>双峰</h2>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="controls">
+        <div class="control">
+          <label for="searchInput">搜索品牌</label>
+          <input id="searchInput" type="search" placeholder="输入品牌或系列关键词" />
+        </div>
+        <div class="control">
+          <label for="focusSelect">重点系列</label>
+          <select id="focusSelect">
+            <option value="all">全部</option>
+            <option value="flagship">旗舰系列</option>
+            <option value="foldable">折叠屏</option>
+            <option value="camera">影像旗舰</option>
+            <option value="midrange">中端系列</option>
+          </select>
+        </div>
+        <div class="control">
+          <label for="monthRange">查看月份</label>
+          <input id="monthRange" type="range" min="1" max="12" value="9" />
+          <span id="monthLabel">9月</span>
+        </div>
+      </section>
+
+      <section class="legend">
+        <div class="legend-item">
+          <span class="dot dot-primary"></span>
+          <span>集中发布月</span>
+        </div>
+        <div class="legend-item">
+          <span class="dot dot-secondary"></span>
+          <span>补充发布月</span>
+        </div>
+        <div class="legend-item">
+          <span class="dot dot-neutral"></span>
+          <span>低频窗口</span>
+        </div>
+      </section>
+
+      <section class="grid" id="brandGrid"></section>
+
+      <section class="insight">
+        <div>
+          <h3>趋势洞察</h3>
+          <p>
+            头部品牌在上半年（1-4 月）与下半年（9-11 月）形成双峰发布节奏，折叠屏与影像旗舰更倾向秋季。
+            中端系列则分布更均匀，承担补充节奏的角色。
+          </p>
+        </div>
+        <ul>
+          <li>春季：旗舰迭代、影像旗舰与生态新品。</li>
+          <li>夏季：折叠屏、轻旗舰与海外市场补充。</li>
+          <li>秋季：年度旗舰、跨品类发布会集中。</li>
+          <li>年末：中端系列补档与电商节点新品。</li>
+        </ul>
+      </section>
+    </main>
+
+    <footer>
+      <p>数据为规律性整理，建议结合官方发布会信息核实。</p>
+    </footer>
+
+    <script src="app.js"></script>
+  </body>
+</html>
